@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Magic Numbers</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9f9f9;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .instructions {
+      max-width: 800px;
+      margin: 0 auto 30px;
+      font-size: 1.2rem;
+      background-color: #fff3cd;
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 8px solid #ffcc00;
+      color: #333;
+    }
+
+    .number-container {
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 15px;
+      padding: 10px 0;
+      width: 100%;
+    }
+
+    .number {
+      font-size: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 70px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 10px;
+    }
+
+    .shape {
+      font-size: 2rem;
+      margin-top: 5px;
+    }
+
+    .controls {
+      position: fixed;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    }
+
+    button:hover {
+      background-color: #388e3c;
+    }
+
+    .popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(255, 77, 77, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8rem;
+      font-weight: bold;
+      color: white;
+      z-index: 1000;
+      display: none;
+    }
+
+    .popup.active {
+      display: flex;
+      animation: flash 0.5s infinite alternate;
+    }
+
+    .popup-content {
+      animation: shake 0.4s ease-in-out infinite;
+    }
+
+    @keyframes flash {
+      from { background-color: #ff4d4d; }
+      to { background-color: #ff0000; }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: scale(1) translateX(0); }
+      25% { transform: scale(1.05) translateX(-10px); }
+      50% { transform: scale(1.1) translateX(10px); }
+      75% { transform: scale(1.05) translateX(-5px); }
+    }
+
+    @media (max-width: 600px) {
+      .number {
+        font-size: 1rem;
+        min-width: 60px;
+      }
+
+      .shape {
+        font-size: 1.5rem;
+      }
+
+      .instructions {
+        font-size: 1rem;
+      }
+
+      .controls {
+        top: auto;
+        bottom: 20px;
+        right: 10px;
+        flex-direction: column;
+      }
+
+      button {
+        font-size: 0.9rem;
+        padding: 8px 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="instructions">
+    <strong>Step 1:</strong> Choose a number from the following.  
+    <br><strong>Step 2:</strong> Subtract your number but its reverse.  
+    <br><strong>Step 3:</strong> Find and remember the shape of the number you got.  
+    <br><strong>Step 4:</strong> Click on the ready button.
+  </div>
+
+  <div class="number-container" id="numberContainer"></div>
+
+  <div class="controls">
+    <button onclick="showPopup()">I'm Ready</button>
+    <button onclick="location.reload()">Again?</button>
+  </div>
+
+  <div class="popup" id="popup" onclick="hidePopup()">
+    <div class="popup-content" id="popupShape"></div>
+  </div>
+
+  <script>
+    const shapes = ["★", "✿", "☀", "◆", "⬤", "♥", "☘", "☂", "⬛", "⚽"];
+    const numbers = Array.from({ length: 101 }, (_, i) => i); // 0 to 100
+    const shapeMap = {};
+    const container = document.getElementById("numberContainer");
+    const popup = document.getElementById("popup");
+    const popupShape = document.getElementById("popupShape");
+
+    // Pick a shape for all multiples of 9
+    const commonShape = shapes[Math.floor(Math.random() * shapes.length)];
+
+    numbers.forEach(num => {
+      let shape;
+      if (num % 9 === 0) {
+        shape = commonShape;
+      } else {
+        shape = shapes[Math.floor(Math.random() * shapes.length)];
+      }
+
+      shapeMap[num] = shape;
+
+      const div = document.createElement("div");
+      div.className = "number";
+      div.innerHTML = `<div>${num}</div><div class="shape">${shape}</div>`;
+      container.appendChild(div);
+    });
+
+    function showPopup() {
+      popupShape.innerText = commonShape;
+      popup.classList.add("active");
+    }
+
+    function hidePopup() {
+      popup.classList.remove("active");
+    }
+  </script>
+</body>
+</html>
