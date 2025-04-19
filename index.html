@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Number Shape Grid</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .grid {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      margin-top: 2rem;
+    }
+
+    .cell {
+      background: white;
+      border-radius: 12px;
+      padding: 20px 40px;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+      font-size: 2.5rem;
+      width: fit-content;
+    }
+
+    .shape {
+      display: block;
+      font-size: 7rem;
+      margin-top: 10px;
+    }
+
+    .button-group {
+      position: fixed;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      z-index: 999;
+    }
+
+    .button-group button {
+      padding: 14px 24px;
+      font-size: 3rem;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      transition: background 0.2s;
+    }
+
+    .button-group button:hover {
+      background: #0056b3;
+    }
+
+    .popup {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .popup.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .popup-content {
+      background: white;
+      padding: 50px 80px;
+      border-radius: 20px;
+      font-size: 6rem;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    }
+@keyframes shake {
+  0%, 100% { transform: scale(1) translateX(0); }
+  25% { transform: scale(1.05) translateX(-10px); }
+  50% { transform: scale(1.1) translateX(10px); }
+  75% { transform: scale(1.05) translateX(-5px); }
+}
+
+@keyframes flashRed {
+  0%, 100% { background-color: #f2f2f2; }
+  50% { background-color: #ff4d4d; }
+}
+
+.popup.active .popup-content {
+  animation: shake 0.5s ease-in-out infinite;
+}
+
+body.flashing {
+  animation: flashRed 0.4s alternate infinite;
+}
+
+  </style>
+</head>
+<body>
+
+  <h1>The Magic Numbers!</h1>
+  <div id="grid" class="grid"></div>
+
+  <div class="button-group">
+    <button id="readyBtn">I'm Ready</button>
+    <button id="againBtn">Again?</button>
+  </div>
+
+  <div id="popup" class="popup">
+    <div class="popup-content" id="popupShape"></div>
+  </div>
+
+  <script>
+    const grid = document.getElementById("grid");
+    const popup = document.getElementById("popup");
+    const popupShape = document.getElementById("popupShape");
+
+    const shapePool = [
+      "*", "#", "@", "&", "%", "+", "!", "?", "~", "$", "§", "^", "•", "✓", ">", "<", 
+      "=", "∆", "π", "ø", "∑", "∞", "√", "≠", "≈", "⊕", "◊", "♠", "♣", "♥", "♦", "★", 
+      "☆", "☯", "☀", "☁", "☂", "☃", "☎", "✉", "✂", "✏", "✒", "✖", "✳", "❄", "❌", "💡", 
+      "🔥", "🌟", "🍀", "🍕", "🎲", "🎯", "🚀", "🐱", "🐶", "🦄", "👾", "👻", "😺", "😎", 
+      "😃", "🤖", "🧠", "🫀", "🪐", "🌈", "🍩", "🥑", "🧊", "🍉", "🍓", "🥝", "🛸", "🦖", 
+      "🕹", "🎮", "🎵", "🎨", "📚", "📝", "🧩", "🧸", "🏆", "⚽", "🏀", "🏈", "🥇", "🚴", 
+      "🏹", "🗺", "🧭", "🛠", "🔧", "🔒", "🔑", "💰", "💎", "🪙", "📦", "🧪", "⚗️", "🔬", 
+      "🔭", "📡", "🖥", "💻"
+    ];
+
+    const totalNumbers = 101;
+    const shapes = {};
+    const usedShapes = new Set();
+    let commonShape;
+
+    function getRandomShape() {
+      let shape;
+      do {
+        shape = shapePool[Math.floor(Math.random() * shapePool.length)];
+      } while (usedShapes.has(shape));
+      usedShapes.add(shape);
+      return shape;
+    }
+
+    function initGrid() {
+      commonShape = getRandomShape();
+
+      for (let i = 0; i < totalNumbers; i++) {
+        const isMultiple = i % 9 === 0;
+        const shape = isMultiple ? commonShape : getRandomShape();
+        shapes[i] = shape;
+
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        cell.innerHTML = `<strong>${i}</strong><span class="shape">${shape}</span>`;
+        grid.appendChild(cell);
+      }
+    }
+
+    function showPopup() {
+  popupShape.innerText = commonShape;
+  popup.classList.add("active");
+  document.body.classList.add("flashing");
+    }
+
+    function refreshPage() {
+      location.reload();
+    }
+
+    popup.addEventListener("click", () => {
+  popup.classList.remove("active");
+  document.body.classList.remove("flashing");
+});
+
+
+    document.getElementById("readyBtn").addEventListener("click", showPopup);
+    document.getElementById("againBtn").addEventListener("click", refreshPage);
+
+    initGrid();
+  </script>
+</body>
+</html>
