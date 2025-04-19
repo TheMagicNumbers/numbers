@@ -26,19 +26,17 @@
 
     .number-container {
       display: flex;
-      flex-wrap: nowrap;
-      overflow-x: auto;
+      flex-wrap: wrap;
       gap: 15px;
-      padding: 10px 0;
-      width: 100%;
+      justify-content: center;
     }
 
     .number {
+      width: calc(25% - 15px); /* 4 blocks per row with spacing */
       font-size: 1.5rem;
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-width: 70px;
       background: white;
       border-radius: 8px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
@@ -116,8 +114,8 @@
 
     @media (max-width: 600px) {
       .number {
+        width: calc(50% - 15px); /* 2 blocks per row on small screens */
         font-size: 1rem;
-        min-width: 60px;
       }
 
       .shape {
